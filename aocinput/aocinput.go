@@ -50,11 +50,21 @@ func iterateFileLines(filename string) []string {
 func GetScliceOfStringSlices(filename string) [][]string {
 
 	lines := iterateFileLines((filename))
-	stringArray := make([][]string, 0, len(lines))
+	stringSlice := make([][]string, 0, len(lines))
 
 	for _, s := range lines {
 		stringValues := strings.Split(s, " ")
-		stringArray = append(stringArray, stringValues)
+		stringSlice = append(stringSlice, stringValues)
 	}
-	return stringArray
+	return stringSlice
+}
+
+func GetStringSlice(filename string) []string {
+
+	lines := iterateFileLines((filename))
+
+	stringSlice := make([]string, 0, len(lines))
+	stringSlice = append(stringSlice, lines...)
+
+	return stringSlice
 }
