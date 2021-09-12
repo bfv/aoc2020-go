@@ -67,16 +67,10 @@ func (m BitMask) CalcAddrs(baseAddr int) []int {
 
 func main() {
 
-	if true {
-		input := aocinput.GetScliceOfStringSlices("input.txt", " ")
-		a, b := solve(input)
-		fmt.Println("day14a:", a)
-		fmt.Println("day14b:", b)
-	} else {
-		m := BitMask{}
-		m.mask = "X11X00X11"
-		fmt.Println(m.CalcAddrs(0))
-	}
+	input := aocinput.GetScliceOfStringSlices("input.txt", " ")
+	a, b := solve(input)
+	fmt.Println("day14a:", a)
+	fmt.Println("day14b:", b)
 }
 
 func solve(data [][]string) (uint64, uint64) {
