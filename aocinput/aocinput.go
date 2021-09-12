@@ -47,13 +47,13 @@ func iterateFileLines(filename string) []string {
 	return lines
 }
 
-func GetScliceOfStringSlices(filename string) [][]string {
+func GetScliceOfStringSlices(filename string, splitChar string) [][]string {
 
 	lines := iterateFileLines((filename))
 	stringSlice := make([][]string, 0, len(lines))
 
 	for _, s := range lines {
-		stringValues := strings.Split(s, " ")
+		stringValues := strings.Split(s, splitChar)
 		stringSlice = append(stringSlice, stringValues)
 	}
 	return stringSlice

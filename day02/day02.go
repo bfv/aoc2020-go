@@ -31,7 +31,7 @@ func (p PwdRule) ValidatePosition(pwd string) bool {
 }
 
 func main() {
-	input := aocinput.GetScliceOfStringSlices("input.txt")
+	input := aocinput.GetScliceOfStringSlices("input.txt", " ")
 	a, b := solve(input)
 	fmt.Println("day2a:", a)
 	fmt.Println("day2b:", b)
