@@ -70,11 +70,11 @@ func calcExpression(expr []string) int {
 	for _, ch := range expr {
 		if ch == "+" || ch == "*" || ch == "(" {
 			stack.Push(ch)
-		} else if ch == ")" {
-			stackCh := stack.Pop()
-			stack.Pop() // remove the "("
-			processNumber(&stack, stackCh)
 		} else {
+			if ch == ")" {
+				ch = stack.Pop()
+				stack.Pop() // remove the "("
+			}
 			processNumber(&stack, ch)
 		}
 	}
