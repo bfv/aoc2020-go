@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	input := aocinput.GetStringSlice("_input.txt")
+	input := aocinput.GetStringSlice("input.txt")
 	data := processInput(input)
 	a, b := solve(data)
 	fmt.Println("day18a:", a)
@@ -19,22 +19,27 @@ func main() {
 
 type Stack struct {
 	chars []string
-	pos int
+	sp    int
 }
 
 func (s *Stack) Push(char string) {
-	s = append(s, char)
-	pos++
+	s.chars = append(s.chars, char)
+	(s.sp)++
+}
+
+func (s *Stack) Pop() string {
+	ch := s.chars[s.sp-1]
+	s.chars = s.chars[:s.sp-1]
+	(s.sp)--
+	return ch
 }
 
 func (s Stack) LastIsOperand() bool {
-	c := s.chars[pos-1]
+	if s.sp == 0 {
+		return false
+	}
+	c := s.chars[s.sp-1]
 	return c == "+" || c == "*"
-}
-
-func (s Stack) LastIsNumber() bool {
-	i, err := strconv.Atoi(s.chars[pos-1])
-	return err == nil
 }
 
 func processInput(input []string) [][]string {
@@ -51,23 +56,47 @@ func processInput(input []string) [][]string {
 func solve(data [][]string) (int, int) {
 	var answerA, answerB int
 
-	for a, expr := range data {
-		parseExpression(expr[a+1:])
+	for _, expr := range data {
+		answerA += calcExpression(expr)
 	}
 
-	fmt.Println(data)
 	return answerA, answerB
 }
 
-func parseExpression(expr []string) int {
-	var res int
-	var lastNumber int
-	var lastOperand string
+func calcExpression(expr []string) int {
 
-	for _, char := range expr {
-		switch char {
-		case "(":
-			res = 
+	stack := Stack{}
+
+	for _, ch := range expr {
+		if ch == "+" || ch == "*" || ch == "(" {
+			stack.Push(ch)
+		} else if ch == ")" {
+			stackCh := stack.Pop()
+			stack.Pop() // remove the "("
+			processNumber(&stack, stackCh)
+		} else {
+			processNumber(&stack, ch)
 		}
 	}
+
+	res, _ := strconv.Atoi(stack.Pop())
+	return res
+}
+
+func processNumber(stack *Stack, ch string) {
+
+	if stack.LastIsOperand() {
+		var res int
+		thisInt, _ := strconv.Atoi(ch)
+		operand := stack.Pop()
+		otherInt, _ := strconv.Atoi(stack.Pop())
+		if operand == "+" {
+			res = thisInt + otherInt
+		} else {
+			res = thisInt * otherInt
+		}
+		ch = strconv.Itoa(res)
+	}
+
+	stack.Push(ch)
 }
