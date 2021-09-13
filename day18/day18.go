@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	input := aocinput.GetStringSlice("input.txt")
+	input := aocinput.GetStringSlice("_input.txt")
 	data := processInput(input)
 	a, b := solve(data)
 	fmt.Println("day18a:", a)
@@ -57,13 +57,14 @@ func solve(data [][]string) (int, int) {
 	var answerA, answerB int
 
 	for _, expr := range data {
-		answerA += calcExpression(expr)
+		answerA += calcExpressionA(expr)
+		answerB += calcExpressionB(expr)
 	}
 
 	return answerA, answerB
 }
 
-func calcExpression(expr []string) int {
+func calcExpressionA(expr []string) int {
 
 	stack := Stack{}
 
@@ -81,6 +82,10 @@ func calcExpression(expr []string) int {
 
 	res, _ := strconv.Atoi(stack.Pop())
 	return res
+}
+
+func calcExpressionB(expr []string) int {
+	return -1
 }
 
 func processNumber(stack *Stack, ch string) {
