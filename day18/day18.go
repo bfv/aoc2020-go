@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	input := aocinput.GetStringSlice("_input.txt")
+	input := aocinput.GetStringSlice("input.txt")
 	data := processInput(input)
 	a, b := solve(data)
 	fmt.Println("day18a:", a)
@@ -28,9 +28,13 @@ func (s *Stack) Push(char string) {
 }
 
 func (s *Stack) Pop() string {
-	ch := s.chars[s.sp-1]
-	s.chars = s.chars[:s.sp-1]
-	(s.sp)--
+	var ch string
+
+	if s.sp > 0 {
+		ch = s.chars[s.sp-1]
+		s.chars = s.chars[:s.sp-1]
+		(s.sp)--
+	}
 	return ch
 }
 
@@ -40,6 +44,10 @@ func (s Stack) LastIsOperand() bool {
 	}
 	c := s.chars[s.sp-1]
 	return c == "+" || c == "*"
+}
+
+func (s Stack) IsEmpty() bool {
+	return s.sp == 0
 }
 
 func processInput(input []string) [][]string {
@@ -56,9 +64,11 @@ func processInput(input []string) [][]string {
 func solve(data [][]string) (int, int) {
 	var answerA, answerB int
 
-	for _, expr := range data {
+	for i, expr := range data {
 		answerA += calcExpressionA(expr)
+		fmt.Println("a", i)
 		answerB += calcExpressionB(expr)
+		fmt.Println("b", i)
 	}
 
 	return answerA, answerB
@@ -76,7 +86,7 @@ func calcExpressionA(expr []string) int {
 				ch = stack.Pop()
 				stack.Pop() // remove the "("
 			}
-			processNumber(&stack, ch)
+			processNumberA(&stack, ch)
 		}
 	}
 
@@ -84,11 +94,7 @@ func calcExpressionA(expr []string) int {
 	return res
 }
 
-func calcExpressionB(expr []string) int {
-	return -1
-}
-
-func processNumber(stack *Stack, ch string) {
+func processNumberA(stack *Stack, ch string) {
 
 	if stack.LastIsOperand() {
 		var res int
@@ -104,4 +110,75 @@ func processNumber(stack *Stack, ch string) {
 	}
 
 	stack.Push(ch)
+}
+
+func calcExpressionB(expr []string) int {
+	stack := Stack{}
+
+	for _, ch := range expr {
+		force := false
+		if ch == "+" || ch == "*" || ch == "(" {
+			stack.Push(ch)
+		} else {
+			if ch == ")" {
+				ch = stack.Pop()
+				force = true
+			}
+			processNumberB(&stack, ch, force)
+		}
+	}
+
+	// at this point there's just multiplication left
+	for stack.sp > 1 {
+		ch := stack.Pop()
+		processNumberB(&stack, ch, true)
+	}
+
+	res, _ := strconv.Atoi(stack.Pop())
+	return res
+}
+
+func processNumberB(stack *Stack, ch string, force bool) {
+
+	if stack.LastIsOperand() {
+		operand := stack.Pop()
+		if operand == "+" || force {
+			res := applyOperandB(stack.Pop(), operand, ch)
+			if force && !(stack.IsEmpty()) {
+				popped := stack.Pop()
+				if popped != "(" {
+					stack.Push(popped)
+				}
+			}
+			if force {
+				processNumberB(stack, res, false)
+			} else {
+				stack.Push(res)
+			}
+		} else {
+			stack.Push(operand) // push * back on the stack
+			stack.Push(ch)
+		}
+	} else {
+		if !stack.IsEmpty() {
+			popped := stack.Pop()
+			if popped != "(" {
+				stack.Push(popped)
+			}
+		}
+		stack.Push(ch)
+	}
+
+}
+
+func applyOperandB(a string, operand string, b string) string {
+	var res int
+	iA, _ := strconv.Atoi(a)
+	iB, _ := strconv.Atoi(b)
+	if operand == "+" {
+		res = iA + iB
+	} else {
+		res = iA * iB
+	}
+	return strconv.Itoa(res)
 }
